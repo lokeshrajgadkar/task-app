@@ -1,8 +1,8 @@
-package com.loke.taskapp.services;
+package com.loke.taskapp.service;
 
 import com.loke.taskapp.domain.entity.Task;
 import com.loke.taskapp.domain.requests.CreateTaskRequest;
 
 public interface TaskService {
-    public Task createTask(CreateTaskRequest request);
+    Task createTask(CreateTaskRequest request);
 }
