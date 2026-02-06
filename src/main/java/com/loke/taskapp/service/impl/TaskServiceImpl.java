@@ -3,11 +3,17 @@ package com.loke.taskapp.service.impl;
 import com.loke.taskapp.domain.entity.Task;
 import com.loke.taskapp.domain.entity.TaskStatus;
 import com.loke.taskapp.domain.requests.CreateTaskRequest;
+import com.loke.taskapp.domain.requests.UpdateTaskRequest;
+import com.loke.taskapp.exception.TaskNotFoundException;
 import com.loke.taskapp.repository.TaskRepository;
 import com.loke.taskapp.service.TaskService;
+
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -26,5 +32,29 @@ public class TaskServiceImpl implements TaskService {
                 TaskStatus.OPEN, request.priority(),now,now
         );
         return taskRepository.save(task);
+    }
+
+    @Override
+    public List<Task> listTasks() {
+        return taskRepository.findAll(Sort.by(Sort.Direction.ASC, "created"));
+    }
+
+    @Override
+    public Task updateTask(UUID taskId, UpdateTaskRequest request) {
+        Task task =taskRepository.findById(taskId).orElseThrow(() -> new TaskNotFoundException(taskId));
+
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        task.setDueDate(request.dueDate());
+        task.setStatus(request.status());
+        task.setPriority(request.priority());
+        task.setUpdated(Instant.now());
+
+        return taskRepository.save(task);
+    }
+
+    @Override
+    public void deleteTask(UUID taskId) {
+        taskRepository.deleteById(taskId);
     }
 }
